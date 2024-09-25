@@ -16,13 +16,9 @@ bool RGBLed::COMMON_CATHODE = false;
 RGBLed::RGBLed(int red, int green, int blue, bool common) : _red(red), _green(green), _blue(blue), _common(common), _brightness(100)
 {
 #if defined(ESP32)
-	ledcSetup(0, 5000, 8);
-	ledcSetup(1, 5000, 8);
-	ledcSetup(2, 5000, 8);
-
-	ledcAttachPin(_red, 0);
-	ledcAttachPin(_green, 1);
-	ledcAttachPin(_blue, 2);
+	ledcAttachChannel(_red, 5000, 8, 0);
+	ledcAttachChannel(_green, 5000, 8, 1);
+	ledcAttachChannel(_blue, 50000, 8, 2);
 
 #else
 	pinMode(_red, OUTPUT);
@@ -141,9 +137,9 @@ void RGBLed::color(int red, int green, int blue)
 	if (_common == COMMON_ANODE)
 	{
 #if defined(ESP32)
-		ledcWrite(0, 255 - red);
-		ledcWrite(1, 255 - green);
-		ledcWrite(2, 255 - blue);
+		ledcWriteChannel(0, 255 - red);
+		ledcWriteChannel(1, 255 - green);
+		ledcWriteChannel(2, 255 - blue);
 #else
 		analogWrite(_red, 255 - red);
 		analogWrite(_green, 255 - green);
@@ -153,9 +149,9 @@ void RGBLed::color(int red, int green, int blue)
 	else
 	{
 #if defined(ESP32)
-		ledcWrite(0, red);
-		ledcWrite(1, green);
-		ledcWrite(2, blue);
+		ledcWriteChannel(0, red);
+		ledcWriteChannel(1, green);
+		ledcWriteChannel(2, blue);
 #else
 		analogWrite(_red, red);
 		analogWrite(_green, green);
