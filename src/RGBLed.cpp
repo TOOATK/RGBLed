@@ -31,14 +31,11 @@ RGBLed::RGBLed(int red, int green, int blue, bool common)
       _fade_direction(true)
 {
 #if defined(ESP32)
-    // ESP32-S2 compatible LEDC setup
-    ledcSetup(0, 5000, 8);      // Channel 0, 5kHz, 8-bit resolution
-    ledcSetup(1, 5000, 8);      // Channel 1
-    ledcSetup(2, 5000, 8);      // Channel 2
-    
-    ledcAttachPin(_red_pin, 0);    // Attach red pin to channel 0
-    ledcAttachPin(_green_pin, 1);  // Attach green pin to channel 1
-    ledcAttachPin(_blue_pin, 2);   // Attach blue pin to channel 2
+    // ESP32 compatible LEDC setup for newest Arduino core
+    // Store the channel numbers returned by ledcAttach
+    _red_channel = ledcAttach(_red_pin, 5000, 8);    // Attach red pin with 5kHz, 8-bit resolution
+    _green_channel = ledcAttach(_green_pin, 5000, 8);  // Attach green pin with 5kHz, 8-bit resolution
+    _blue_channel = ledcAttach(_blue_pin, 5000, 8);   // Attach blue pin with 5kHz, 8-bit resolution
 #else
     pinMode(_red_pin, OUTPUT);
     pinMode(_green_pin, OUTPUT);
@@ -92,9 +89,9 @@ void RGBLed::color(int red, int green, int blue)
     if (_common == COMMON_ANODE)
     {
 #if defined(ESP32)
-        ledcWrite(0, 255 - red);
-        ledcWrite(1, 255 - green);
-        ledcWrite(2, 255 - blue);
+        ledcWrite(_red_pin, 255 - red);
+        ledcWrite(_green_pin, 255 - green);
+        ledcWrite(_blue_pin, 255 - blue);
 #else
         analogWrite(_red_pin, 255 - red);
         analogWrite(_green_pin, 255 - green);
@@ -104,9 +101,9 @@ void RGBLed::color(int red, int green, int blue)
     else
     {
 #if defined(ESP32)
-        ledcWrite(0, red);
-        ledcWrite(1, green);
-        ledcWrite(2, blue);
+        ledcWrite(_red_pin, red);
+        ledcWrite(_green_pin, green);
+        ledcWrite(_blue_pin, blue);
 #else
         analogWrite(_red_pin, red);
         analogWrite(_green_pin, green);

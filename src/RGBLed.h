@@ -145,12 +145,15 @@ private:
 	ConnectionType _connection_type;
 
 	// Direct connection pins
-	int _red_pin, _green_pin, _blue_pin;
+	u_int8_t _red_pin, _green_pin, _blue_pin;
 
 #ifdef USE_I2C_PWM
 	// I2C PWM connection
 	Adafruit_PWMServoDriver *_pwm_driver;
 	uint8_t _red_channel, _green_channel, _blue_channel;
+#elif defined(ESP32)
+	// LEDC channel numbers for ESP32 direct connection
+	u_int8_t _red_channel, _green_channel, _blue_channel;
 #endif
 
 	bool _common;
